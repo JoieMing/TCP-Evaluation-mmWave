@@ -1,30 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
-/*
- *   Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
- *   Copyright (c) 2015, NYU WIRELESS, Tandon School of Engineering, New York University
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License version 2 as
- *   published by the Free Software Foundation;
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *   Author: Marco Miozzo <marco.miozzo@cttc.es>
- *           Nicola Baldo  <nbaldo@cttc.es>
- *
- *   Modified by: Marco Mezzavilla < mezzavilla@nyu.edu>
- *                         Sourjya Dutta <sdutta@nyu.edu>
- *                         Russell Ford <russell.ford@nyu.edu>
- *                         Menglei Zhang <menglei@nyu.edu>
- */
-
 #include "ns3/applications-module.h"
 #include "ns3/command-line.h"
 #include "ns3/config-store.h"
@@ -51,7 +24,6 @@ using namespace mmwave;
  * A script to simulate the DOWNLINK TCP data over mmWave links
  * with the mmWave devices and the LTE EPC.
  */
-NS_LOG_COMPONENT_DEFINE("mmWaveTCPExample");
 
 // Global variables for throughput calculation
 uint64_t totalBytesReceived_ul = 0;
@@ -769,17 +741,17 @@ main(int argc, char* argv[])
         remoteHostContainer.Get(0)->AddApplication(app);
         sinkApps.Get(0)->TraceConnectWithoutContext("Rx", MakeCallback(&DLReceivePacket));
 
-        // std::ofstream ascii;
-        // Ptr<OutputStreamWrapper> DLascii_wrap;
-        // ascii.open(prefix_file_name + "-dl-ascii");
-        // DLascii_wrap = new OutputStreamWrapper(prefix_file_name + "-dl-ascii", std::ios::out);
-        // internet.EnableAsciiIpv4All(DLascii_wrap);
+        std::ofstream ascii;
+        Ptr<OutputStreamWrapper> DLascii_wrap;
+        ascii.open(prefix_file_name + "-dl-ascii");
+        DLascii_wrap = new OutputStreamWrapper(prefix_file_name + "-dl-ascii", std::ios::out);
+        internet.EnableAsciiIpv4All(DLascii_wrap);
 
-        // Simulator::Schedule (Seconds (0.00001), &TraceCwnd, prefix_file_name + "-dl-cwnd.data");
-        // Simulator::Schedule (Seconds (0.00001), &TraceSsThresh, prefix_file_name + "-dl-ssth.data");
-        // Simulator::Schedule (Seconds (0.00001), &TraceRtt, prefix_file_name + "-dl-rtt.data");
-        // Simulator::Schedule (Seconds (0.00001), &TraceAck, prefix_file_name + "-dl-ack.data");
-        // Simulator::Schedule (Seconds (0.00001), &TraceCongState, prefix_file_name + "-dl-cong-state.data");
+        Simulator::Schedule (Seconds (0.00001), &TraceCwnd, prefix_file_name + "-dl-cwnd.data");
+        Simulator::Schedule (Seconds (0.00001), &TraceSsThresh, prefix_file_name + "-dl-ssth.data");
+        Simulator::Schedule (Seconds (0.00001), &TraceRtt, prefix_file_name + "-dl-rtt.data");
+        Simulator::Schedule (Seconds (0.00001), &TraceAck, prefix_file_name + "-dl-ack.data");
+        Simulator::Schedule (Seconds (0.00001), &TraceCongState, prefix_file_name + "-dl-cong-state.data");
 
         app->SetStartTime(Seconds(0.1));
         // Schedule throughput calculation every second
@@ -808,53 +780,21 @@ main(int argc, char* argv[])
             ulApp->SetStopTime(Seconds(stopTime));
 
             // Tracing
-            // Ptr<OutputStreamWrapper> ULascii_wrap;
-            // ascii.open(prefix_file_name + "-ul-ascii");
-            // ULascii_wrap = new OutputStreamWrapper(prefix_file_name + "-ul-ascii", std::ios::out);
-            // internet.EnableAsciiIpv4All(ULascii_wrap);
+            Ptr<OutputStreamWrapper> ULascii_wrap;
+            ascii.open(prefix_file_name + "-ul-ascii");
+            ULascii_wrap = new OutputStreamWrapper(prefix_file_name + "-ul-ascii", std::ios::out);
+            internet.EnableAsciiIpv4All(ULascii_wrap);
 
-            // Simulator::Schedule (Seconds (0.00001), &ULTraceCwnd, prefix_file_name + "-ul-cwnd.data");
-            // Simulator::Schedule (Seconds (0.00001), &ULTraceSsThresh, prefix_file_name + "-ul-ssth.data");
-            // Simulator::Schedule (Seconds (0.00001), &ULTraceRtt, prefix_file_name + "-ul-rtt.data");
-            // Simulator::Schedule (Seconds (0.00001), &ULTraceAck, prefix_file_name + "-ul-ack.data");
-            // Simulator::Schedule (Seconds (0.00001), &ULTraceCongState, prefix_file_name + "-ul-cong-state.data");
+            Simulator::Schedule (Seconds (0.00001), &ULTraceCwnd, prefix_file_name + "-ul-cwnd.data");
+            Simulator::Schedule (Seconds (0.00001), &ULTraceSsThresh, prefix_file_name + "-ul-ssth.data");
+            Simulator::Schedule (Seconds (0.00001), &ULTraceRtt, prefix_file_name + "-ul-rtt.data");
+            Simulator::Schedule (Seconds (0.00001), &ULTraceAck, prefix_file_name + "-ul-ack.data");
+            Simulator::Schedule (Seconds (0.00001), &ULTraceCongState, prefix_file_name + "-ul-cong-state.data");
 
             Simulator::Schedule(Seconds(0.5), &CalculateULThroughput, prefix_file_name + "-ul-tp.data");
         }
     }
-    // else
-    // {
-    //     // Install and start applications on UEs and remote host
-    //     uint16_t sinkPort = 20000;
-
-    //     Address sinkAddress(InetSocketAddress(ueIpIface.GetAddress(0), sinkPort));
-    //     PacketSinkHelper packetSinkHelper("ns3::UdpSocketFactory",
-    //                                       InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
-    //     ApplicationContainer sinkApps = packetSinkHelper.Install(ueNodes.Get(0));
-
-    //     sinkApps.Start(Seconds(0.));
-    //     sinkApps.Stop(Seconds(simStopTime));
-
-    //     Ptr<Socket> ns3UdpSocket =
-    //         Socket::CreateSocket(remoteHostContainer.Get(0), UdpSocketFactory::GetTypeId());
-    //     Ptr<MyApp> app = CreateObject<MyApp>();
-    //     app->Setup(ns3UdpSocket, sinkAddress, 1400, 5000000, DataRate("500Mb/s"));
-
-    //     remoteHostContainer.Get(0)->AddApplication(app);
-    //     AsciiTraceHelper asciiTraceHelper;
-    //     Ptr<OutputStreamWrapper> stream2 =
-    //         asciiTraceHelper.CreateFileStream("mmWave-udp-data-am.txt");
-    //     sinkApps.Get(0)->TraceConnectWithoutContext("Rx", MakeBoundCallback(&Rx, stream2));
-
-    //     app->SetStartTime(Seconds(0.1));
-    //     app->SetStopTime(Seconds(stopTime));
-    // }
-
-    // p2ph.EnablePcapAll("mmwave-sgi-capture");
-    // Config::Set("/NodeList/*/DeviceList/*/TxQueue/MaxSize", QueueSizeValue(QueueSize("1000p"))); //100000 packets 100p
-    // data-udl2
-    // Config::Set("/NodeList/*/DeviceList/*/TxQueue/MaxSize", QueueSizeValue(QueueSize("100000p"))); //100000 packets 100p
-
+    
      
     // Configure downlink queue size (Node 0 to Node 1)
     Config::Set("/NodeList/2/DeviceList/*/TxQueue/MaxSize", QueueSizeValue(QueueSize("100000p"))); // Large DL queue
